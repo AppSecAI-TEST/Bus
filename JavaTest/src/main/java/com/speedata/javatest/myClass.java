@@ -1,5 +1,7 @@
 package com.speedata.javatest;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -40,5 +42,65 @@ public class myClass {
     private static byte[] getFinalByte(byte[] convertBytes) {
 
         return Arrays.copyOfRange(convertBytes, 0, convertBytes.length - 4);
+    }
+
+
+    private static String create(String qrCode) throws IOException {
+        // 协议类型(2字节) + 原数据长度（2字节）+ 原码数据+ POSID长度（2字节）+ POSID + BUSID长度（2字节）+ BUSID + 刷卡时间戳（8字节）+ 交易流水号长度（2字节）+ 交易流水号（由POS机生成）+ 线路编号长度(2字节) + 线路编号 + 上/下车站点/序号长度(2字节) + 上/下车站点/序号 + 分段计价标识(1个字节 0-固定价格 1-分段计价，如果没传，则默认0)
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        // 协议类型
+        bout.write(ByteUtils.shortToByte((short) 12));
+
+        // 原始数据
+//        byte[] qrCodes = qrCode.getBytes();
+
+//        String qrCodeStr = toQrCodeBase64(qrCode);
+        byte[] qrCodes = qrCode.getBytes();
+        // 二维码信息
+        bout.write(ByteUtils.shortToByte((short) qrCodes.length));
+        bout.write(qrCodes);
+
+
+        String busId = "5-1323";
+        String lineNo = "19路";
+        String stopNo = "3";
+        String posId = "2-1232342432";
+        Long ts = System.currentTimeMillis();
+        byte segFlg = 0;
+        String posSnum = "xxsdfklsadlf12313adkalsdjaldka";
+
+        // POSID
+        bout.write(ByteUtils.shortToByte((short) posId.getBytes().length));
+        bout.write(posId.getBytes());
+
+        // BUSID
+        bout.write(ByteUtils.shortToByte((short) busId.getBytes().length));
+        bout.write(busId.getBytes());
+
+        // 刷卡时间戳
+        bout.write(ByteUtils.longToByte(ts));
+
+        // 交易流水号
+        bout.write(ByteUtils.shortToByte((short) posSnum.getBytes().length));
+        bout.write(posSnum.getBytes());
+
+        // 线路编号
+        bout.write(ByteUtils.shortToByte((short) lineNo.getBytes().length));
+        bout.write(lineNo.getBytes());
+
+        // 上下车站序/名称
+        bout.write(ByteUtils.shortToByte((short) stopNo.getBytes().length));
+        bout.write(stopNo.getBytes());
+
+        bout.write(segFlg);
+        bout.write((byte) 1);
+
+        byte[] arr = bout.toByteArray();
+        bout.close();
+        // XOR 操作
+        long[] larr = ByteUtils.byteArrToLongArr(arr);
+        long[] xlarr = ByteUtils.xor(larr, 201782342);
+        byte[] x = ByteUtils.longArrToByteArr(xlarr);
+        return Base64.getEncoder().encodeToString(x);
     }
 }
