@@ -5,10 +5,10 @@ import java.util.Base64;
 
 public class myClass {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         String content = "RfQGDEXENzVKalY52MqdYKkL5OCh4E+Io+y39x86FjWaNoxpyqR8ynTkbbI4hr1yeN0lxgVIp7XmVsH42nYNZP+11Ho0G1I8MRJSqBLYIiOEPbBwPnwkDVBcCatH/3K6GbcyAB/+AE9o5w0ziCstPkg8XAAAW/Jpza217OE5BUodSCgizJo/iEf0Bgw=";
-        String key = "MIICXQIBAAKBgQC7MzvccDzRXI0+zm5j7nFDw4sRrVCLRK6jSL5ciWpkSDjluDcfbRLtyFWSZKCIPcuKNAnJb+BOEZ9PY84DhqgucuUpF+mFV979cmJzEV5QI9Z15hmL3c8uaStnVwb4/TKlb8kRIAKSUX+VhU/5gqDPKGpkM24/w86MCmv2TDMrEwIDAQABAoGAF/E/kLwSKzzJG+VPHRzcA6y41rPx/z3zkBK3tiIlJ1pNXKQo+K38o8jhmO2h0osEw1JQhiD28UUzuPWs3aqVS9N4rVQiqTVh0ZtaMk/O7jImY0TYp3CxaXnGbi+YKxce7pN11wyTSZzFXkcyAHgOOuPB89ZBpy+60j5dZ2TKGqECQQDmKFeIxlpWJxTYrYFJ0t3E/MTMoNIhWPrAeEdFAPDjNjz6KMUPM0re7FKTYyWXiq/gvr70yNEtpWYdxNbxNeJrAkEA0DgfDIqpwNELcXV9O4EAWyrjo4Wqm4MGLUDW8/WzlX7kJCDcoxgGBozQ0wIn95ZOnrA9NqjuRPsXmD8a4/QT+QJBAN/vPoP4oiqS6eiMoG/IuDgSzBRhITKLFaaxIH7WFIqt2hR4GIvaly1g+FMpM4lHyio8zST0QvpLpJiwTYXxrLMCQQCBCSaEuTH14ha7W1oelBVKakvkPKO79/jN9o6/ZRbDoH11vj+9etfRG1cWTRHDp4xVX1awFwSCDzFSEllxxwLRAkAmLqvO0pQpVDjfYKJPquAsrNSqKotdVsiywjAdz6dXFfAl0UXxp+clhU1t1YThCVEGdPDTt9FeKCqbX29pN7J9";
+        String privateKey = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBALszO9xwPNFcjT7ObmPucUPDixGtUItErqNIvlyJamRIOOW4Nx9tEu3IVZJkoIg9y4o0Cclv4E4Rn09jzgOGqC5y5SkX6YVX3v1yYnMRXlAj1nXmGYvdzy5pK2dXBvj9MqVvyREgApJRf5WFT/mCoM8oamQzbj/DzowKa/ZMMysTAgMBAAECgYAX8T+QvBIrPMkb5U8dHNwDrLjWs/H/PfOQEre2IiUnWk1cpCj4rfyjyOGY7aHSiwTDUlCGIPbxRTO49azdqpVL03itVCKpNWHRm1oyT87uMiZjRNincLFpecZuL5grFx7uk3XXDJNJnMVeRzIAeA4648Hz1kGnL7rSPl1nZMoaoQJBAOYoV4jGWlYnFNitgUnS3cT8xMyg0iFY+sB4R0UA8OM2PPooxQ8zSt7sUpNjJZeKr+C+vvTI0S2lZh3E1vE14msCQQDQOB8MiqnA0QtxdX07gQBbKuOjhaqbgwYtQNbz9bOVfuQkINyjGAYGjNDTAif3lk6esD02qO5E+xeYPxrj9BP5AkEA3+8+g/iiKpLp6Iygb8i4OBLMFGEhMosVprEgftYUiq3aFHgYi9qXLWD4UykziUfKKjzNJPRC+kukmLBNhfGsswJBAIEJJoS5MfXiFrtbWh6UFUpqS+Q8o7v3+M32jr9lFsOgfXW+P71619EbVxZNEcOnjFVfVrAXBIIPMVISWXHHAtECQCYuq87SlClUON9gok+q4Cys1Koqi11WyLLCMB3Pp1cV8CXRRfGn5yWFTW3VhOEJUQZ08NO30V4oKptfb2k3sn0=";
         //base64转码
         byte[] base64DecodeByte = Base64.getDecoder().decode(content);
         //byte[]  >> long[];
@@ -21,8 +21,19 @@ public class myClass {
         byte[] finalBytes = getFinalByte(convertBytes);
         System.out.println(Arrays.toString(finalBytes));
 
-        String cardId = ByteUtils.bytes2Hex(Arrays.copyOfRange(convertBytes, 0, 3));
+        int cardId = ByteUtils.bytesToInt(ByteUtils.sub(finalBytes,0,4));
         System.out.println(cardId);
+        int cityLength = ByteUtils.sub(finalBytes,4,1)[0];
+        String cityId = new String(ByteUtils.sub(finalBytes,5,cityLength));
+        System.out.println(cityId);
+        byte[] rsaByte = ByteUtils.sub(finalBytes,5+cityLength,128);
+
+        byte[] decodeRSA = RSAUtils3.decryptByPrivateKey(rsaByte,privateKey);
+
+        long userId = ByteUtils.byteToLong(ByteUtils.sub(decodeRSA,0,8));
+        System.out.println(userId);
+        long time = ByteUtils.byteToLong(ByteUtils.sub(decodeRSA,8,16));
+        System.out.println(time);
 
     }
 

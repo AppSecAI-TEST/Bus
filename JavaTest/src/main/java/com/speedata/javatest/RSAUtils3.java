@@ -20,11 +20,13 @@ import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ import java.util.Map;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import sun.security.rsa.RSAPrivateCrtKeyImpl;
 
@@ -238,16 +241,40 @@ public class RSAUtils3 {
      * @return
      * @throws Exception
      */
-    public static byte[] decryptByPrivateKey(byte[] encryptedData, String privateKey)
-            throws Exception {
+    public static byte[] decryptByPrivateKey(byte[] encryptedData, String privateKey) {
+        System.out.println("000000000000000000000");
         byte[] keyBytes = Base64.getDecoder().decode(privateKey);
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM, new BouncyCastleProvider());
-        Key privateK = keyFactory.generatePrivate(pkcs8KeySpec);
-        Cipher cipher = Cipher.getInstance(KEY_ALGORITHM_CONFIG, new BouncyCastleProvider());
-        cipher.init(Cipher.DECRYPT_MODE, privateK);
-
-        return write2ByteArray(cipher, encryptedData, false);
+        KeyFactory keyFactory = null;
+        try {
+            keyFactory = KeyFactory.getInstance(KEY_ALGORITHM, new BouncyCastleProvider());
+            Key privateK = keyFactory.generatePrivate(pkcs8KeySpec);
+            Cipher cipher = Cipher.getInstance(KEY_ALGORITHM_CONFIG, new BouncyCastleProvider());
+            cipher.init(Cipher.DECRYPT_MODE, privateK);
+            return write2ByteArray(cipher, encryptedData, false);
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("11111111111111");
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            System.out.println("222222222222222");
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            System.out.println("33333333333333");
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            System.out.println("444444444444444");
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            System.out.println("5555555555555555");
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            System.out.println("6666666666666666");
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("77777777777777777");
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
