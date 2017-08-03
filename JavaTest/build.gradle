@@ -1,0 +1,13 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'commons-codec:commons-codec:1.10'
+    implementation 'org.bouncycastle:bcprov-jdk16:1.46'
+    implementation 'commons-io:commons-io:2.5'
+    implementation 'com.google.guava:guava:22.0'
+    implementation 'org.apache.commons:commons-lang3:3.5'
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
