@@ -2,12 +2,19 @@ package com.speedata.bus;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
+import android.util.Log;
+import android.view.View;
 
 import com.speedata.bus.utils.AlgorithmUtils;
 
 import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity {
+import okhttp3.Call;
+import win.reginer.http.RHttp;
+import win.reginer.http.callback.StringCallback;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     String content = "RfQGDEXENzVKalY52MqdYKkL5OCh4E+Io+y39x86FjWaNoxpyqR8ynTkbbI4hr1yeN0lxgVIp7XmVsH42nYNZP+11Ho0G1I8MRJSqBLYIiOEPbBwPnwkDVBcCatH/3K6GbcyAB/+AE9o5w0ziCstPkg8XAAAW/Jpza217OE5BUodSCgizJo/iEf0Bgw=";
 
 
@@ -19,6 +26,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        findViewById(R.id.btn_test).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        test();
+    }
+
+    private void test() {
         //获取二维码真码
         byte[] qrCodeByte = AlgorithmUtils.getQrCodeByte(content);
         System.out.println(Arrays.toString(qrCodeByte));
@@ -40,17 +56,34 @@ public class MainActivity extends AppCompatActivity {
         //获取扫码时间是否允许
         boolean isAllowTime = AlgorithmUtils.isAllowTime(decodeRSA);
         System.out.println(isAllowTime);
-        int accountFlow =AlgorithmUtils.getAccountFlow(decodeRSA);
-        System.out.println("accountFlow  is::" +accountFlow);
+        int accountFlow = AlgorithmUtils.getAccountFlow(decodeRSA);
+        System.out.println("accountFlow  is::" + accountFlow);
+
+        postString(qrCodeByte, cityId);
+
     }
 
-    private static byte[] getFinalByte(byte[] convertBytes) {
-        int length = 0;
-        for (int i = convertBytes.length - 1; i >= 0; i--) {
-            if (convertBytes[i] == 0 && convertBytes[i - 1] == 1) {
-                length = i;
+    /**
+     * 组装上传数据.
+     *
+     * @param qrCodeByte 二维码数据
+     * @param cityId     城市id
+     */
+    private void postString(byte[] qrCodeByte, String cityId) {
+        String url = String.format("https://dev.chelaile.net.cn/buspay/api/trade/offline?cityId=%s", cityId);
+        String qrCode = Base64.encodeToString(qrCodeByte, Base64.NO_WRAP);
+        String body = AlgorithmUtils.createBody(qrCode);
+        Log.d("Reginer", "postString:  is:::" + body);
+        RHttp.postString().url(url).content(body).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e) {
+                Log.d("Reginer", "onError: " + Log.getStackTraceString(e));
             }
-        }
-        return Arrays.copyOfRange(convertBytes, 0, length - 1);
+
+            @Override
+            public void onResponse(String response) {
+                Log.d("Reginer", "onResponse: " + response);
+            }
+        });
     }
 }

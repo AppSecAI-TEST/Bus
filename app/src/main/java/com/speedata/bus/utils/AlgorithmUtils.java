@@ -1,5 +1,9 @@
 package com.speedata.bus.utils;
 
+import android.util.Base64;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -145,6 +149,72 @@ public class AlgorithmUtils {
         long allowStartTime = timestampMillis + startTime * 60 * 1000;
         long allowEndTime = timestampMillis + endTime * 60 * 1000;
         return allowStartTime < System.currentTimeMillis() && System.currentTimeMillis() < allowEndTime;
+    }
+
+    /**
+     * 组装请求体.
+     *
+     * @param qrCode 二维码数据
+     * @return 伪码
+     */
+    public static String createBody(String qrCode) {
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        // 协议类型
+        try {
+            bout.write(ByteUtils.shortToByte((short) 12));
+            // 原始数据
+//        byte[] qrCodes = qrCode.getBytes();
+//        String qrCodeStr = toQrCodeBase64(qrCode);
+            byte[] qrCodes = qrCode.getBytes();
+            // 二维码信息
+            bout.write(ByteUtils.shortToByte((short) qrCodes.length));
+            bout.write(qrCodes);
+            String busId = "5-1323";
+            String lineNo = "19路";
+            String stopNo = "3";
+            String posId = "2-1232342432";
+            Long ts = System.currentTimeMillis();
+            byte segFlg = 0;
+            String posSnum = "xxsdfklsadlf12313adkalsdjaldka";
+
+            // POSID
+            bout.write(ByteUtils.shortToByte((short) posId.getBytes().length));
+            bout.write(posId.getBytes());
+
+            // BUSID
+            bout.write(ByteUtils.shortToByte((short) busId.getBytes().length));
+            bout.write(busId.getBytes());
+
+            // 刷卡时间戳
+            bout.write(ByteUtils.longToByte(ts));
+
+            // 交易流水号
+            bout.write(ByteUtils.shortToByte((short) posSnum.getBytes().length));
+            bout.write(posSnum.getBytes());
+
+            // 线路编号
+            bout.write(ByteUtils.shortToByte((short) lineNo.getBytes().length));
+            bout.write(lineNo.getBytes());
+
+            // 上下车站序/名称
+            bout.write(ByteUtils.shortToByte((short) stopNo.getBytes().length));
+            bout.write(stopNo.getBytes());
+
+            bout.write(segFlg);
+            bout.write((byte) 1);
+
+            byte[] arr = bout.toByteArray();
+            bout.close();
+            // XOR 操作
+            long[] larr = ByteUtils.byteArrToLongArr(arr);
+            long[] xlarr = ByteUtils.xor(larr, XOR);
+            byte[] x = ByteUtils.longArrToByteArr(xlarr);
+            return Base64.encodeToString(x, Base64.NO_WRAP);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+
     }
 
     /**
