@@ -23,6 +23,12 @@ repositories {
         dirs 'libs'
     }
 }
+//----------------------------------------------------------GreenDao---------------------------
+apply plugin: 'org.greenrobot.greendao'
+greendao {
+    schemaVersion 1
+}
+//----------------------------------------------------------GreenDao---------------------------
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:26.0.0-beta1'
@@ -39,4 +45,5 @@ dependencies {
     implementation(name: 'SwiftDecoderMobile', ext: 'aar')
     implementation 'org.greenrobot:eventbus:3.0.0'
     implementation 'win.reginer:RHttp:1.1'
+    implementation 'org.greenrobot:greendao:3.2.2'
 }
