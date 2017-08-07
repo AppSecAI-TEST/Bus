@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Bus.iml" filepath="$PROJECT_DIR$/Bus.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Bus.iml" filepath="$PROJECT_DIR$/.idea/Bus.iml" />
+      <module fileurl="file://D:\SpeedataDemo\Bus\Bus.iml" filepath="D:\SpeedataDemo\Bus\Bus.iml" />
       <module fileurl="file://$PROJECT_DIR$/JavaTest/JavaTest.iml" filepath="$PROJECT_DIR$/JavaTest/JavaTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

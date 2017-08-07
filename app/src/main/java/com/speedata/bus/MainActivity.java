@@ -5,8 +5,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.speedata.bus.utils.AlgorithmUtils;
+import com.speedata.bus.utils.Myeventbus;
+import com.speedata.bus.utils.ScanDecode;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Arrays;
 
@@ -15,9 +23,14 @@ import win.reginer.http.RHttp;
 import win.reginer.http.callback.StringCallback;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    String content = "RfQGDEXENzVKalY52MqdYKkL5OCh4E+Io+y39x86FjWaNoxpyqR8ynTkbbI4hr1yeN0lxgVIp7XmVsH42nYNZP+11Ho0G1I8MRJSqBLYIiOEPbBwPnwkDVBcCatH/3K6GbcyAB/+AE9o5w0ziCstPkg8XAAAW/Jpza217OE5BUodSCgizJo/iEf0Bgw=";
-
-
+//    String content = "RfQGDEXENzVKalY52MqdYKkL5OCh4E+Io+y39x86FjWaNoxpyqR8ynTkbbI4hr1yeN0lxgVIp7XmVsH42nYNZP+11Ho0G1I8MRJSqBLYIiOEPbBwPnwkDVBcCatH/3K6GbcyAB/+AE9o5w0ziCstPkg8XAAAW/Jpza217OE5BUodSCgizJo/iEf0Bgw=";
+    //    String content = "RfQGDEXENzVKalY52MqdYKkL5OCh4E+Io+y39x86FjWaNoxpyqR8
+// ynTkbbI4hr1yeN0lxgVIp7XmVsH42nYNZP+11Ho0G1I8MRJSqBLYIiOEPbBwPnwkDVBcCatH/3K6GbcyAB/
+// +AE9o5w0ziCstPkg8XAAAW/Jpza217OE5BUodSCgizJo/iEf0Bgw=";
+    String content = "";
+    private Button button;
+    TextView textView;
+    ScanDecode scanDecode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,12 +39,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initView() {
-        findViewById(R.id.btn_test).setOnClickListener(this);
-    }
+         org.greenrobot.eventbus.EventBus.getDefault().register(this);
 
+        scanDecode=new ScanDecode(this);
+        findViewById(R.id.btn_test).setOnClickListener(this);
+        findViewById(R.id.start).setOnClickListener(this);
+        textView=findViewById(R.id.tvmsg);
+    }
+    @Subscribe (threadMode = ThreadMode.MAIN)
+    public  void getDecodeMsG(Myeventbus myeventbus){
+        content=myeventbus.getDecodeMsg();
+        if (content!=""){
+            textView.setText(content);
+            Toast.makeText(MainActivity.this,content,Toast.LENGTH_SHORT).show();
+            test();
+            
+        }
+
+    }
     @Override
     public void onClick(View view) {
-        test();
+        if (view.getId()==R.id.btn_test){
+
+            test();
+        }else if (view.getId()==R.id.start){
+            scanDecode.startScan();
+        }
     }
 
     private void test() {
@@ -82,8 +115,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onResponse(String response) {
-                Log.d("Reginer", "onResponse: " + response);
+                Log.d("Reginer", "onResponse33: " + response);
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        org.greenrobot.eventbus.EventBus.getDefault().unregister(this);
+        scanDecode.DestroyScan();
     }
 }
