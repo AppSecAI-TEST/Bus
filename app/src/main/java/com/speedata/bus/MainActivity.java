@@ -74,16 +74,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //获取扫码时间是否允许
         boolean isAllowTime = AlgorithmUtils.isAllowTime(decodeRSA);
         String qrCode = Base64.encodeToString(qrCodeByte, Base64.NO_WRAP);
-        String body = AlgorithmUtils.createBody(qrCode);
+        String body;
+        if (isAllowTime){
+             body = AlgorithmUtils.createBody(qrCode,(byte) 0);
+        }else {
+            body = AlgorithmUtils.createBody(qrCode,(byte) 1);
+        }
         QrBody qrBody = new QrBody(body, cityId, true);
-        if (isAllowTime) {
         QrBodyDao mDao = AppBus.getsInstance().getDaoSession().getQrBodyDao();
         mDao.insertOrReplace(qrBody);
         List<QrBody> qrBodyList = mDao.loadAll();
         Log.d("Reginer", "saveInDb  qrBodyList.size  is:::" + qrBodyList.size());
-        } else {
-            Log.d("Reginer", "saveInDb:  无效二维码");
-        }
     }
 
     @Override

@@ -2,18 +2,11 @@ package com.speedata.bus.utils;
 
 import android.util.Base64;
 
-import com.google.common.base.Joiner;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -25,9 +18,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.crypto.BadPaddingException;
@@ -69,53 +60,6 @@ public class RSAUtils3 {
      */
     private static final int MAX_DECRYPT_BLOCK = 128;
 
-    /**
-     * <p>
-     * 生成密钥对(公钥和私钥)
-     * </p>
-     *
-     * @return
-     * @throws Exception
-     */
-    public static RSAKey genRsaKeyByOpenssl(String outPath) throws Exception {
-        String tmpDir = System.getProperty("java.io.tmpdir");
-        String pkcs8PrivateKeyPath = outPath + File.separator + "pkcs8.private.key";
-        String pkcs1PrivateKeyPath = outPath + File.separator + "pkcs1.private.key";
-        String publicKeyPath = outPath + File.separator + "public.key";
-        new File(pkcs8PrivateKeyPath).delete();
-        new File(pkcs1PrivateKeyPath).delete();
-        new File(publicKeyPath).delete();
-        String cmd = Joiner.on("\n").join("#!/bin/bash", "cd " + outPath + ";", "openssl genrsa -out pkcs1.private.key 1024;",
-                "openssl rsa -in pkcs1.private.key -pubout -out public.key;",
-                "openssl pkcs8 -topk8 -inform PEM -in pkcs1.private.key -outform PEM -nocrypt -out pkcs8.private.key;",
-                "echo 'ok'");
-        System.out.println(cmd);
-        File cmdFile = new File(tmpDir + File.separator + "rsa.sh");
-        FileUtils.writeStringToFile(cmdFile, cmd, "utf-8");
-        cmdFile.setExecutable(true);
-        Process process = null;
-        List<String> processList = new ArrayList<>();
-        try {
-            System.out.println(cmdFile.getAbsolutePath());
-            process = Runtime.getRuntime().exec(cmdFile.getAbsolutePath());
-            BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = "";
-            while ((line = input.readLine()) != null) {
-                processList.add(line);
-            }
-            input.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String publicKeyPem = FileUtils.readFileToString(new File(publicKeyPath), "utf-8");
-        String pkcs1PrivateKeyPem = FileUtils.readFileToString(new File(pkcs1PrivateKeyPath), "utf-8");
-        String pkcs8PrivateKeyPem = FileUtils.readFileToString(new File(pkcs8PrivateKeyPath), "utf-8");
-        if (StringUtils.isNotBlank(publicKeyPem) && StringUtils.isNotBlank(pkcs1PrivateKeyPem) &&
-                StringUtils.isNotBlank(pkcs8PrivateKeyPem)) {
-            return RSAKey.create(pem2SignString(pkcs1PrivateKeyPath), pem2SignString(pkcs8PrivateKeyPath), pem2SignString(publicKeyPath));
-        }
-        throw new Exception("生成RSA 公钥、PKCS1私钥、PKCS8私钥 失败!");
-    }
 
     /**
      * <p>
@@ -392,10 +336,6 @@ public class RSAUtils3 {
         }
     }
 
-    public static String pem2SignString(String pemPath) throws IOException {
-        List<String> s = FileUtils.readLines(new File(pemPath), "utf-8");
-        return Joiner.on("").join(s.subList(1, s.size() - 1));
-    }
 
 
 }

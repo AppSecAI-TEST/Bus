@@ -155,7 +155,7 @@ public class AlgorithmUtils {
      * @param qrCode 二维码数据
      * @return 伪码
      */
-    public static String createBody(String qrCode) {
+    public static String createBody(String qrCode, byte state) {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         // 协议类型
         try {
@@ -200,6 +200,7 @@ public class AlgorithmUtils {
 
             bout.write(segFlg);
             bout.write((byte) 1);
+            bout.write(state);
 
             byte[] arr = bout.toByteArray();
             bout.close();
