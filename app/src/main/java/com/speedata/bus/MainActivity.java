@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.speedata.bus.db.DbCommon;
 import com.speedata.bus.utils.Myeventbus;
 import com.speedata.bus.utils.ScanDecode;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -61,5 +62,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         org.greenrobot.eventbus.EventBus.getDefault().unregister(this);
         scanDecode.DestroyScan();
+    }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

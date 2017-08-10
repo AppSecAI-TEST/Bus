@@ -7,6 +7,7 @@ import android.content.Intent;
 import com.speedata.bus.db.DaoMaster;
 import com.speedata.bus.db.DaoSession;
 import com.speedata.bus.db.DbHelper;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -51,6 +52,7 @@ public class AppBus extends Application {
         DbHelper helper = new DbHelper(this, "bus", null);
         Database db = helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
+        MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType. E_UM_NORMAL);
 //        jobService = new ComponentName(this, UploadingSer.class);
         Intent intent1 = new Intent();
         intent1.setClass(this, UploadingSer.class);
