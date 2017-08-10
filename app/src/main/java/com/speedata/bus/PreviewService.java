@@ -19,7 +19,7 @@ import com.honeywell.barcode.HSMDecodeComponent;
 import com.honeywell.camera.CameraManager;
 
 
-public class FxService extends Service {
+public class PreviewService extends Service {
 
     //定义浮动窗口布局
     private static LinearLayout mFloatLayout;
@@ -29,7 +29,7 @@ public class FxService extends Service {
 
     private static View mFloatView;
     private static CameraManager cameraManager;
-    private static final String TAG = "FxService";
+    private static final String TAG = "PreviewService";
     public static HSMDecodeComponent decCom;
 
     @Override
@@ -47,9 +47,9 @@ public class FxService extends Service {
     public void createFloatView() {
         cameraManager = CameraManager.getInstance(getApplication());
         cameraManager.reopenCamera();
-        Camera camera=cameraManager.getCamera();
+        Camera camera = cameraManager.getCamera();
         Camera.Parameters parameters = camera.getParameters();
-        parameters.setPreviewSize(720, 1280);
+        parameters.setPreviewSize(1080, 720);
         camera.setParameters(parameters);
 
 
@@ -60,7 +60,8 @@ public class FxService extends Service {
         DisplayMetrics dm = new DisplayMetrics();
         mWindowManager.getDefaultDisplay().getMetrics(dm);
         //设置window type
-        wmParams.type = LayoutParams.TYPE_PHONE;
+//        wmParams.type = LayoutParams.TYPE_PHONE;
+        wmParams.type=LayoutParams.TYPE_SYSTEM_OVERLAY;
         //设置图片格式，效果为背景透明
         wmParams.format = PixelFormat.RGBA_8888;
         //设置浮动窗口不可聚焦（实现操作除浮动窗口外的其他可见窗口的操作）
@@ -78,8 +79,8 @@ public class FxService extends Service {
 //        wmParams.height = 100;
 
         //设置悬浮窗口长宽数据
-        wmParams.width = LayoutParams.WRAP_CONTENT;
-        wmParams.height = LayoutParams.WRAP_CONTENT;
+        wmParams.width = LayoutParams.MATCH_PARENT;
+        wmParams.height = LayoutParams.MATCH_PARENT;
 
         LayoutInflater inflater = LayoutInflater.from(getApplication());
         //获取浮动窗口视图所在布局

@@ -1,13 +1,11 @@
 package com.speedata.bus.utils;
 
 import android.util.Base64;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Locale;
 
 /**
  * ----------Dragon be here!----------/
@@ -141,13 +139,13 @@ public class AlgorithmUtils {
      * @return 开关
      */
     public static boolean isAllowTime(byte[] rsaByte) {
-        DateFormat DEFAULT_FORMAT = new SimpleDateFormat("yyyyMMddHHmmssSSSS", Locale.getDefault());
         long timestamp = getTimestamp(rsaByte);
+
+        Log.d("Reginer", "timestamp   is: " + timestamp);
         int startTime = ByteUtils.sub(rsaByte, 16, 1)[0];
         int endTime = ByteUtils.sub(rsaByte, 17, 1)[0];
-        long timestampMillis = TimeUtils.string2Millis(String.valueOf(timestamp), DEFAULT_FORMAT);
-        long allowStartTime = timestampMillis + startTime * 60 * 1000;
-        long allowEndTime = timestampMillis + endTime * 60 * 1000;
+        long allowStartTime = timestamp + startTime * 60 * 1000;
+        long allowEndTime = timestamp + endTime * 60 * 1000;
         return allowStartTime < System.currentTimeMillis() && System.currentTimeMillis() < allowEndTime;
     }
 

@@ -6,9 +6,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.speedata.bus.db.QrBody;
 import com.speedata.bus.db.QrBodyDao;
@@ -27,12 +25,8 @@ import win.reginer.http.RHttp;
 import win.reginer.http.callback.StringCallback;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    //    String content = "RfQGDEXENzVKalY52MqdYKkL5OCh4E+Io+y39x86FjWaNoxpyqR8ynTkbbI4hr1yeN0lxgVIp7XmVsH42nYNZP+11Ho0G1I8MRJSqBLYIiOEPbBwPnwkDVBcCatH/3K6GbcyAB/+AE9o5w0ziCstPkg8XAAAW/Jpza217OE5BUodSCgizJo/iEf0Bgw=";
-    //    String content = "RfQGDEXENzVKalY52MqdYKkL5OCh4E+Io+y39x86FjWaNoxpyqR8
-// ynTkbbI4hr1yeN0lxgVIp7XmVsH42nYNZP+11Ho0G1I8MRJSqBLYIiOEPbBwPnwkDVBcCatH/3K6GbcyAB/
-// +AE9o5w0ziCstPkg8XAAAW/Jpza217OE5BUodSCgizJo/iEf0Bgw=";
+    //    String content = "RfQGDEXENzXDv2sHQ1PbwhX2tinz0YXLCiGySQ0sqjb9Hyw7f/Z9ZVSWYRRYydYK/wTVatTz6j3YmnfF7t1P68hcrtw+RWEmdoHHznhLvf1Pzm4X/bUJrqh6FlCC7A1fW5IGD987HCqHpk3Zn5/xPP3mDT747Lx0tX9txS6XMbBKWBe8vAR530f0Bgw=";
     String content = "";
-    private Button button;
     TextView textView;
     ScanDecode scanDecode;
 
@@ -57,13 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         content = myeventbus.getDecodeMsg();
         if (!TextUtils.isEmpty(content)) {
             textView.setText(content);
-            Toast.makeText(MainActivity.this, content, Toast.LENGTH_SHORT).show();
-            test();
-
-            saveInDb(content);
-
+//            saveInDb(content);
         }
-
     }
 
     /**
@@ -90,24 +79,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         boolean isAllowTime = AlgorithmUtils.isAllowTime(decodeRSA);
         String qrCode = Base64.encodeToString(qrCodeByte, Base64.NO_WRAP);
         String body = AlgorithmUtils.createBody(qrCode);
-        QrBody qrBody = new QrBody(body, cityId);
-        if (isAllowTime) {
-            QrBodyDao mDao = AppBus.getsInstance().getDaoSession().getQrBodyDao();
-            mDao.insertOrReplace(qrBody);
-            List<QrBody> qrBodyList = mDao.loadAll();
-            Log.d("Reginer", "saveInDb  qrBodyList.size  is:::" + qrBodyList.size());
-        } else {
-            Log.d("Reginer", "saveInDb:  无效二维码");
-        }
-
-
+        QrBody qrBody = new QrBody(body, cityId, true);
+//        if (isAllowTime) {
+        QrBodyDao mDao = AppBus.getsInstance().getDaoSession().getQrBodyDao();
+        mDao.insertOrReplace(qrBody);
+        List<QrBody> qrBodyList = mDao.loadAll();
+        Log.d("Reginer", "saveInDb  qrBodyList.size  is:::" + qrBodyList.size());
+//        } else {
+//            Log.d("Reginer", "saveInDb:  无效二维码");
+//        }
     }
 
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.btn_test) {
-
-            test();
+            saveInDb(content);
         } else if (view.getId() == R.id.start) {
             scanDecode.startScan();
         }
@@ -162,6 +148,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onResponse(String response) {
                 Log.d("Reginer", "onResponse33: " + response);
+                if (response.equals("1")) {
+                    textView.setText("成功");
+                } else if (response.equals("-1")) {
+
+                    textView.setText("数据解析失败");
+
+                } else if (response.equals("-2")) {
+                    textView.setText(" 记录数据失败，需要提示POS机重传");
+
+                }
+
             }
         });
     }

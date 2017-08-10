@@ -12,7 +12,7 @@ import com.honeywell.camera.CameraManager;
 import com.honeywell.license.ActivationManager;
 import com.honeywell.license.ActivationResult;
 import com.honeywell.plugins.decode.DecodeResultListener;
-import com.speedata.bus.FxService;
+import com.speedata.bus.PreviewService;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -80,7 +80,7 @@ public class ScanDecode implements DecodeResultListener {
 
     public void initScan() {
         try {
-            //activate the API with your license key   trial-speed-tjian-03162017
+            //activate the API with your license key   trial-speed-tjian-03162017  trial-testa-tjian-07282017   trial-speed-tjian-08072017
             ActivationResult activationResult = ActivationManager.activate(context, "trial-testa-tjian-07282017");
             Toast.makeText(context, "Activation Result: " + activationResult, Toast.LENGTH_LONG).show();
             //get the singleton instance of the decoder
@@ -105,7 +105,7 @@ public class ScanDecode implements DecodeResultListener {
 
     public void startScan() {
         Intent intent = new Intent();
-        intent.setClass(context, FxService.class);
+        intent.setClass(context, PreviewService.class);
         intent.setAction("com.Fxservice");
         intent.setPackage("com.scanbarcodeservice");
         context.startService(intent);
@@ -117,7 +117,7 @@ public class ScanDecode implements DecodeResultListener {
         hsmDecoder.removeResultListener(this);
         HSMDecoder.disposeInstance();
         Intent intent = new Intent();
-        intent.setClass(context, FxService.class);
+        intent.setClass(context, PreviewService.class);
         intent.setAction("com.Fxservice");
         intent.setPackage("com.scanbarcodeservice");
         context.stopService(intent);
