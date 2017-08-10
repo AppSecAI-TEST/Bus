@@ -40,10 +40,10 @@ public class DbCommon {
         String body;
         if (isAllowTime){
             body = AlgorithmUtils.createBody(qrCode,(byte) 0);
-            PlaySound.playerSound(AppBus.getsInstance(),R.raw.success);
+            PlaySound.playerSound(R.raw.success);
         }else {
             body = AlgorithmUtils.createBody(qrCode,(byte) 1);
-            PlaySound.playerSound(AppBus.getsInstance(),R.raw.flash);
+            PlaySound.playerSound(R.raw.flash);
         }
         QrBody qrBody = new QrBody(body, cityId, true);
         QrBodyDao mDao = AppBus.getsInstance().getDaoSession().getQrBodyDao();

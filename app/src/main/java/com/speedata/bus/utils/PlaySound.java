@@ -1,7 +1,8 @@
 package com.speedata.bus.utils;
 
-import android.content.Context;
 import android.media.MediaPlayer;
+
+import com.speedata.bus.AppBus;
 
 /**
  * Created by lenovo-pc on 2017/8/10.
@@ -12,8 +13,8 @@ public class PlaySound {
 //    private static Map<Integer, Integer> mapSRC;
 //    private static SoundPool sp; //声音池
 
-    public static void playerSound(Context context, int source) {
-        MediaPlayer mediaPlayer = MediaPlayer.create(context, source);
+    public static void playerSound(int source) {
+        MediaPlayer mediaPlayer = MediaPlayer.create(AppBus.getsInstance(), source);
         mediaPlayer.start();
     }
 

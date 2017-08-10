@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!TextUtils.isEmpty(content)) {
             textView.setText(content);
             DbCommon.saveInDb(content);
-            DbCommon.getPostData();
+//            DbCommon.getPostData();
         }
     }
 

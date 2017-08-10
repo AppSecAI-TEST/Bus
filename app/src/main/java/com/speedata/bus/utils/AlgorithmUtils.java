@@ -3,7 +3,6 @@ package com.speedata.bus.utils;
 import android.util.Base64;
 import android.util.Log;
 
-import com.speedata.bus.AppBus;
 import com.speedata.bus.R;
 
 import java.io.ByteArrayOutputStream;
@@ -244,7 +243,7 @@ public class AlgorithmUtils {
             }
         }
         if (length == 0) {
-            PlaySound.playerSound(AppBus.getsInstance(), R.raw.wrong);
+            PlaySound.playerSound(R.raw.wrong);
         }
         return Arrays.copyOfRange(convertBytes, 0, length - 1);
     }
