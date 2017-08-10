@@ -43,7 +43,7 @@ public class ScanDecode implements DecodeResultListener {
             //get the singleton instance of the decoder
             hsmDecoder = HSMDecoder.getInstance(context);
             hsmDecoder.enableSymbology(QR);
-            PlaySound.initSoundPool(context);
+//            PlaySound.initSoundPool(context);
             //           enableDecodeFlag();
             hsmDecoder.enableAimer(true);
             hsmDecoder.setAimerColor(Color.RED);
@@ -113,7 +113,7 @@ public class ScanDecode implements DecodeResultListener {
                     } else {
 //                        hsmDecoder.enableSound(true);
                         isdecodeDate = decodeDate;
-                        PlaySound.play(2, 0);
+//                        PlaySound.play(2, 0);
                         EventBus.getDefault().post(new Myeventbus(decodeDate));
                     }
 
