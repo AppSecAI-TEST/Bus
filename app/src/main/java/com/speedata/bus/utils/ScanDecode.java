@@ -18,50 +18,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.UnsupportedEncodingException;
 
-import static com.honeywell.barcode.Symbology.AZTEC;
-import static com.honeywell.barcode.Symbology.C128_ISBT;
-import static com.honeywell.barcode.Symbology.CODABAR;
-import static com.honeywell.barcode.Symbology.CODABLOCK_F;
-import static com.honeywell.barcode.Symbology.CODE11;
-import static com.honeywell.barcode.Symbology.CODE128;
-import static com.honeywell.barcode.Symbology.CODE39;
-import static com.honeywell.barcode.Symbology.CODE93;
-import static com.honeywell.barcode.Symbology.COMPOSITE;
-import static com.honeywell.barcode.Symbology.COMPOSITE_WITH_UPC;
-import static com.honeywell.barcode.Symbology.COUPON_CODE;
-import static com.honeywell.barcode.Symbology.DATAMATRIX;
-import static com.honeywell.barcode.Symbology.DATAMATRIX_RECTANGLE;
-import static com.honeywell.barcode.Symbology.EAN13;
-import static com.honeywell.barcode.Symbology.EAN13_2CHAR_ADDENDA;
-import static com.honeywell.barcode.Symbology.EAN13_5CHAR_ADDENDA;
-import static com.honeywell.barcode.Symbology.EAN13_ISBN;
-import static com.honeywell.barcode.Symbology.EAN8;
-import static com.honeywell.barcode.Symbology.EAN8_2CHAR_ADDENDA;
-import static com.honeywell.barcode.Symbology.EAN8_5CHAR_ADDENDA;
-import static com.honeywell.barcode.Symbology.GS1_128;
-import static com.honeywell.barcode.Symbology.HANXIN;
-import static com.honeywell.barcode.Symbology.HK25;
-import static com.honeywell.barcode.Symbology.I25;
-import static com.honeywell.barcode.Symbology.IATA25;
-import static com.honeywell.barcode.Symbology.KOREA_POST;
-import static com.honeywell.barcode.Symbology.M25;
-import static com.honeywell.barcode.Symbology.MICROPDF;
-import static com.honeywell.barcode.Symbology.MSI;
-import static com.honeywell.barcode.Symbology.OCR;
-import static com.honeywell.barcode.Symbology.PDF417;
 import static com.honeywell.barcode.Symbology.QR;
-import static com.honeywell.barcode.Symbology.RSS_14;
-import static com.honeywell.barcode.Symbology.RSS_EXPANDED;
-import static com.honeywell.barcode.Symbology.RSS_LIMITED;
-import static com.honeywell.barcode.Symbology.S25;
-import static com.honeywell.barcode.Symbology.TELEPEN;
-import static com.honeywell.barcode.Symbology.TRIOPTIC;
-import static com.honeywell.barcode.Symbology.UPCA;
-import static com.honeywell.barcode.Symbology.UPCA_2CHAR_ADDENDA;
-import static com.honeywell.barcode.Symbology.UPCA_5CHAR_ADDENDA;
-import static com.honeywell.barcode.Symbology.UPCE_2CHAR_ADDENDA;
-import static com.honeywell.barcode.Symbology.UPCE_5CHAR_ADDENDA;
-import static com.honeywell.barcode.Symbology.UPCE_EXPAND;
 
 /**
  * Created by lenovo-pc on 2017/8/4.
@@ -80,12 +37,13 @@ public class ScanDecode implements DecodeResultListener {
 
     public void initScan() {
         try {
-            //activate the API with your license key   trial-speed-tjian-03162017  trial-testa-tjian-07282017   trial-speed-tjian-08072017
-            ActivationResult activationResult = ActivationManager.activate(context, "trial-testa-tjian-07282017");
+            //activate the API with your license key   trial-speed-tjian-03162017     trial-speed-tjian-08072017
+            ActivationResult activationResult = ActivationManager.activate(context, "trial-speed-tjian-08072017");
             Toast.makeText(context, "Activation Result: " + activationResult, Toast.LENGTH_LONG).show();
             //get the singleton instance of the decoder
             hsmDecoder = HSMDecoder.getInstance(context);
-            initEnableDecode();
+            hsmDecoder.enableSymbology(QR);
+            PlaySound.initSoundPool(context);
             //           enableDecodeFlag();
             hsmDecoder.enableAimer(true);
             hsmDecoder.setAimerColor(Color.RED);
@@ -123,57 +81,6 @@ public class ScanDecode implements DecodeResultListener {
         context.stopService(intent);
     }
 
-    //初始化时全使能条码类型
-    private void initEnableDecode() {
-
-        hsmDecoder.enableSymbology(UPCA);
-        hsmDecoder.enableSymbology(UPCA_2CHAR_ADDENDA);
-        hsmDecoder.enableSymbology(UPCA_5CHAR_ADDENDA);
-        hsmDecoder.enableSymbology(UPCE_EXPAND);
-        hsmDecoder.enableSymbology(UPCE_2CHAR_ADDENDA);
-        hsmDecoder.enableSymbology(UPCE_5CHAR_ADDENDA);
-        hsmDecoder.enableSymbology(EAN8);
-        hsmDecoder.enableSymbology(EAN8_2CHAR_ADDENDA);
-        hsmDecoder.enableSymbology(EAN8_5CHAR_ADDENDA);
-
-        hsmDecoder.enableSymbology(EAN13);
-        hsmDecoder.enableSymbology(EAN13_2CHAR_ADDENDA);
-        hsmDecoder.enableSymbology(EAN13_5CHAR_ADDENDA);
-        hsmDecoder.enableSymbology(EAN13_ISBN);
-
-        hsmDecoder.enableSymbology(CODE128);
-        hsmDecoder.enableSymbology(GS1_128);
-        hsmDecoder.enableSymbology(C128_ISBT);
-        hsmDecoder.enableSymbology(CODE39);
-        hsmDecoder.enableSymbology(COUPON_CODE);
-        hsmDecoder.enableSymbology(TRIOPTIC);
-        hsmDecoder.enableSymbology(I25);
-        hsmDecoder.enableSymbology(S25);
-        hsmDecoder.enableSymbology(IATA25);
-        hsmDecoder.enableSymbology(M25);
-        hsmDecoder.enableSymbology(CODE93);
-        hsmDecoder.enableSymbology(CODE11);
-        hsmDecoder.enableSymbology(CODABAR);
-        hsmDecoder.enableSymbology(TELEPEN);
-        hsmDecoder.enableSymbology(MSI);
-        hsmDecoder.enableSymbology(RSS_14);
-        hsmDecoder.enableSymbology(RSS_LIMITED);
-        hsmDecoder.enableSymbology(RSS_EXPANDED);
-        hsmDecoder.enableSymbology(CODABLOCK_F);
-        hsmDecoder.enableSymbology(PDF417);
-        hsmDecoder.enableSymbology(MICROPDF);
-        hsmDecoder.enableSymbology(COMPOSITE);
-        hsmDecoder.enableSymbology(COMPOSITE_WITH_UPC);
-        hsmDecoder.enableSymbology(AZTEC);
-        hsmDecoder.enableSymbology(DATAMATRIX);
-        hsmDecoder.enableSymbology(DATAMATRIX_RECTANGLE);
-        hsmDecoder.enableSymbology(QR);
-        hsmDecoder.enableSymbology(HANXIN);
-        hsmDecoder.enableSymbology(HK25);
-        hsmDecoder.enableSymbology(KOREA_POST);
-        hsmDecoder.enableSymbology(OCR);
-    }
-
     /**
      * 返回解码结果
      *
@@ -194,7 +101,7 @@ public class ScanDecode implements DecodeResultListener {
     private void displayBarcodeData(HSMDecodeResult[] barcodeData) {
         if (barcodeData.length > 0) {
             HSMDecodeResult firstResult = barcodeData[0];
-            hsmDecoder.enableSound(false);
+//            hsmDecoder.enableSound(false);
             String decodeDate = null;
 
             if (isUTF8(firstResult.getBarcodeDataBytes())) {
@@ -204,8 +111,9 @@ public class ScanDecode implements DecodeResultListener {
                     if (decodeDate.equals(isdecodeDate)) {
                         return;
                     } else {
-                        hsmDecoder.enableSound(true);
+//                        hsmDecoder.enableSound(true);
                         isdecodeDate = decodeDate;
+                        PlaySound.play(2, 0);
                         EventBus.getDefault().post(new Myeventbus(decodeDate));
                     }
 

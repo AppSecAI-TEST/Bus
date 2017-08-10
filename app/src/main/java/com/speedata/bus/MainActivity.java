@@ -17,12 +17,7 @@ import com.speedata.bus.utils.ScanDecode;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.Arrays;
 import java.util.List;
-
-import okhttp3.Call;
-import win.reginer.http.RHttp;
-import win.reginer.http.callback.StringCallback;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     //    String content = "RfQGDEXENzXDv2sHQ1PbwhX2tinz0YXLCiGySQ0sqjb9Hyw7f/Z9ZVSWYRRYydYK/wTVatTz6j3YmnfF7t1P68hcrtw+RWEmdoHHznhLvf1Pzm4X/bUJrqh6FlCC7A1fW5IGD987HCqHpk3Zn5/xPP3mDT747Lx0tX9txS6XMbBKWBe8vAR530f0Bgw=";
@@ -44,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_test).setOnClickListener(this);
         findViewById(R.id.start).setOnClickListener(this);
         textView = findViewById(R.id.tvmsg);
+        scanDecode.startScan();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -51,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         content = myeventbus.getDecodeMsg();
         if (!TextUtils.isEmpty(content)) {
             textView.setText(content);
-//            saveInDb(content);
+            saveInDb(content);
         }
     }
 
@@ -80,14 +76,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String qrCode = Base64.encodeToString(qrCodeByte, Base64.NO_WRAP);
         String body = AlgorithmUtils.createBody(qrCode);
         QrBody qrBody = new QrBody(body, cityId, true);
-//        if (isAllowTime) {
+        if (isAllowTime) {
         QrBodyDao mDao = AppBus.getsInstance().getDaoSession().getQrBodyDao();
         mDao.insertOrReplace(qrBody);
         List<QrBody> qrBodyList = mDao.loadAll();
         Log.d("Reginer", "saveInDb  qrBodyList.size  is:::" + qrBodyList.size());
-//        } else {
-//            Log.d("Reginer", "saveInDb:  无效二维码");
-//        }
+        } else {
+            Log.d("Reginer", "saveInDb:  无效二维码");
+        }
     }
 
     @Override
@@ -97,70 +93,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (view.getId() == R.id.start) {
             scanDecode.startScan();
         }
-    }
-
-    private void test() {
-        //获取二维码真码
-        byte[] qrCodeByte = AlgorithmUtils.getQrCodeByte(content);
-        System.out.println(Arrays.toString(qrCodeByte));
-        //获取主密钥id
-        int keyId = AlgorithmUtils.getKeyId(qrCodeByte);
-        System.out.println(keyId);
-        //获取城市占位字节数
-        int cityLength = AlgorithmUtils.getCityLength(qrCodeByte);
-        //获取城市id
-        String cityId = AlgorithmUtils.getCityId(qrCodeByte, cityLength);
-        System.out.println(cityId);
-        //获取RSA加密数据
-        byte[] rsaByte = AlgorithmUtils.getRsaByte(qrCodeByte, 5 + cityLength);
-        //获取RSA解密数据
-        byte[] decodeRSA = AlgorithmUtils.getRsaDecodeByte(rsaByte);
-        //获取账户id
-        long userId = AlgorithmUtils.getAccountId(decodeRSA);
-        System.out.println(userId);
-        //获取扫码时间是否允许
-        boolean isAllowTime = AlgorithmUtils.isAllowTime(decodeRSA);
-        System.out.println(isAllowTime);
-        int accountFlow = AlgorithmUtils.getAccountFlow(decodeRSA);
-        System.out.println("accountFlow  is::" + accountFlow);
-
-        postString(qrCodeByte, cityId);
-
-    }
-
-    /**
-     * 组装上传数据.
-     *
-     * @param qrCodeByte 二维码数据
-     * @param cityId     城市id
-     */
-    private void postString(byte[] qrCodeByte, String cityId) {
-        String url = String.format("https://dev.chelaile.net.cn/buspay/api/trade/offline?cityId=%s", cityId);
-        String qrCode = Base64.encodeToString(qrCodeByte, Base64.NO_WRAP);
-        String body = AlgorithmUtils.createBody(qrCode);
-        Log.d("Reginer", "postString:  is:::" + body);
-        RHttp.postString().url(url).content(body).build().execute(new StringCallback() {
-            @Override
-            public void onError(Call call, Exception e) {
-                Log.d("Reginer", "onError: " + Log.getStackTraceString(e));
-            }
-
-            @Override
-            public void onResponse(String response) {
-                Log.d("Reginer", "onResponse33: " + response);
-                if (response.equals("1")) {
-                    textView.setText("成功");
-                } else if (response.equals("-1")) {
-
-                    textView.setText("数据解析失败");
-
-                } else if (response.equals("-2")) {
-                    textView.setText(" 记录数据失败，需要提示POS机重传");
-
-                }
-
-            }
-        });
     }
 
     @Override
